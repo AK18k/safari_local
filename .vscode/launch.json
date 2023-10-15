@@ -1,0 +1,25 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "env": {
+                "CUDA_VISIBLE_DEVICES":"0",
+                "CKPT_PATH":"/home/avi/ckpoints/hyena_small_150b_tok.ckpt",
+                "DATA_DIR":"/home/avi/data"
+            },
+            "args": [
+                "--ckpt_path", "/home/avi/ckpoints/hyena_small_150b_tok.ckpt",
+                "--data_dir", "/home/avi/data"
+            ]
+        }
+    ]
+}
