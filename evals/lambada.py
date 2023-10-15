@@ -9,6 +9,7 @@ from collections import Counter
 import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
+import torch.nn.functional as F
 
 
 
@@ -46,6 +47,14 @@ class LAMBADA:
             self.data = [preprocess(json.loads(line)['text']) for line in open(lambada_path)] 
         
         self.use_stop_filter = use_stop_filter 
+
+
+
+    def calc_preplexity(self, model_output_logits, target_ids):
+        val = F.cross_entropy(model_output_logits, target_ids, reduction='sum')
+        return torch.exp(val / target_ids.shape[0])
+
+
     
     def run(self, model_cfg, ckpt_path):
         
@@ -82,6 +91,7 @@ class LAMBADA:
                 tokenized_prompt = tokenizer.encode(code_string)
                 target_token_index_actual = max(target_token_index, -len(tokenized_prompt))
                 target_tokenized = [tokenized_prompt[target_token_index_actual]]
+                target_ids = tokenized_prompt
             else:
                 target = prompt.split(" ")[-1]
                 
@@ -110,17 +120,8 @@ class LAMBADA:
                        in zip(preds[target_token_index_actual:], target_tokenized)
                     ])          
 
-            # # print target and predicted tokens
-            # target_token = tokenizer.decode(target_tokenized)
-            # predicted_token = tokenizer.decode(preds[-len(target_tokenized):])
-            # print(f"target token = {target_token}, predicted token = {predicted_token}")
-
-            # #if target token is not ")" then print the 10 last tokens of the prompt
-            # if target_token != predicted_token:
-            #     print(f"prompt = {tokenizer.decode(tokenized_prompt[-10:])}")
-
-            # # print accuracy
-            # print(f"Accuracy {acc}")
+            preplexity = self.calc_preplexity(logits, torch.tensor(target_ids[1:]).to(device=device))
+            print(f"Preplexity {preplexity.item():4.2f}")
 
             results.append(acc)
             
