@@ -125,9 +125,13 @@ class LAMBADA:
             preplexity = self.calc_preplexity(logits, torch.tensor(target_ids[1:]).to(device=device))
             print(f"Preplexity {preplexity.item():4.2f}")
 
-            results.append(acc)
+            results.append((acc, preplexity.item()))
             
-        print(f"Accuracy {torch.tensor(results).float().mean().item()*100:4.2f}")
+        accuracy_list = [result[0] for result in results]
+        print(f"Accuracy {torch.tensor(accuracy_list).float().mean().item()*100:4.2f}")
+
+        preplexity_list = [result[1] for result in results]
+        print(f"Preplexity {torch.tensor(preplexity_list).mean().item():4.2f}")
 
         print(f"Skipped prompts {skiped_prompts_count}")
 
