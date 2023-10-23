@@ -123,7 +123,6 @@ class LAMBADA:
                     ])          
 
             preplexity = self.calc_preplexity(logits, torch.tensor(target_ids[1:]).to(device=device))
-            print(f"Preplexity {preplexity.item():4.2f}")
 
             results.append((acc, preplexity.item()))
             
