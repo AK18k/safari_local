@@ -38,7 +38,9 @@ class LAMBADA:
     def __init__(self, data_dir=None, use_stop_filter:bool=False, use_code_data:bool=True):
         self.use_code_data_ = use_code_data
         if self.use_code_data_:
-            with open('/home/avi/data/code/python/final/jsonl/test/python_test_0.jsonl', 'r') as f:
+            data_dir = os.environ.get("DATA_DIR", data_dir)
+            code_path = os.path.join(data_dir + "/test/python_test_0.jsonl")
+            with open(code_path, 'r') as f:
                 sample_file = f.readlines()
             self.data = sample_file
         else:
