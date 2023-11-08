@@ -7,7 +7,8 @@ from tqdm import tqdm
 import json 
 from collections import Counter
 import matplotlib
-matplotlib.use('TkAgg')
+#matplotlib.use('TkAgg')
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import torch.nn.functional as F
 
@@ -38,7 +39,9 @@ class LAMBADA:
     def __init__(self, data_dir=None, use_stop_filter:bool=False, use_code_data:bool=True):
         self.use_code_data_ = use_code_data
         if self.use_code_data_:
-            with open('/home/avi/data/code/python/final/jsonl/test/python_test_0.jsonl', 'r') as f:
+            data_dir = os.environ.get("DATA_DIR", data_dir)
+            code_path = os.path.join(data_dir + "/test/python_test_0.jsonl")
+            with open(code_path, 'r') as f:
                 sample_file = f.readlines()
             self.data = sample_file
         else:
@@ -121,11 +124,14 @@ class LAMBADA:
                     ])          
 
             preplexity = self.calc_preplexity(logits, torch.tensor(target_ids[1:]).to(device=device))
-            print(f"Preplexity {preplexity.item():4.2f}")
 
-            results.append(acc)
+            results.append((acc, preplexity.item()))
             
-        print(f"Accuracy {torch.tensor(results).float().mean().item()*100:4.2f}")
+        accuracy_list = [result[0] for result in results]
+        print(f"Accuracy {torch.tensor(accuracy_list).float().mean().item()*100:4.2f}")
+
+        preplexity_list = [result[1] for result in results]
+        print(f"Preplexity {torch.tensor(preplexity_list).mean().item():4.2f}")
 
         print(f"Skipped prompts {skiped_prompts_count}")
 
