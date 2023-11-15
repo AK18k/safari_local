@@ -5,6 +5,9 @@
 		},
 		{
 			"path": "../CodeSearchNet"
+		},
+		{
+			"path": "../../data"
 		}
 	],
 	"settings": {}
