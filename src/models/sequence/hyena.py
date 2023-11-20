@@ -27,6 +27,9 @@ from src.models.nn import Activation
 
 # reference convolution with residual connection
 def fftconv_ref(u, k, D, dropout_mask, gelu=True, k_rev=None):
+    print('fftconv_ref')
+    print_line_and_file(inspect.currentframe())
+    
     seqlen = u.shape[-1]
     fft_size = 2 * seqlen
     k_f = torch.fft.rfft(k, n=fft_size) / fft_size
@@ -207,8 +210,8 @@ class HyenaFilter(OptimModule):
         return y
     
 
-def print_line_and_file():
-    current_frame = inspect.currentframe()
+def print_line_and_file(current_frame = None):
+    # current_frame = inspect.currentframe()
     line_number = current_frame.f_lineno
     file_name = inspect.getfile(current_frame)
     print(f'Current line number: {line_number}, File name: {file_name}')
@@ -257,7 +260,7 @@ class HyenaOperator(nn.Module):
             return_state: (bool): whether to return a state
         """
         print('HyenaOperator::__init__')
-        print_line_and_file()
+        print_line_and_file(inspect.currentframe())
 
         super().__init__()
         assert d_model % num_heads == 0, f'Model dimension {d_model} must be divisible by num heads {num_heads}'
@@ -319,7 +322,7 @@ class HyenaOperator(nn.Module):
     
     def forward(self, u, *args, **kwargs):
         print('HyenaOperator::forward')
-        print_line_and_file()
+        print_line_and_file(inspect.currentframe())
         
         l = u.size(-2)
         l_filter = min(l, self.l_max)

@@ -39,8 +39,8 @@ import src.utils.registry as registry
 import inspect
 
 
-def print_line_and_file():
-    current_frame = inspect.currentframe()
+def print_line_and_file(current_frame=None):
+    # current_frame = inspect.currentframe()
     line_number = current_frame.f_lineno
     file_name = inspect.getfile(current_frame)
     print(f'Current line number: {line_number}, File name: {file_name}')
@@ -50,7 +50,7 @@ def create_mixer_cls(layer=None, process_group=None,
                      attn_layer_idx=None, attn_cfg=None, layer_idx=None,
                      sequence_parallel=True, device=None, dtype=None):
     print('create_mixer_cls')
-    print_line_and_file()
+    print_line_and_file(inspect.currentframe())
 
     factory_kwargs = {'device': device, 'dtype': dtype}
     parallel_kwargs = ({'process_group': process_group, 'sequence_parallel': sequence_parallel}
@@ -84,7 +84,7 @@ def create_mixer_cls(layer=None, process_group=None,
 def create_mlp_cls(d_model, d_inner=None, process_group=None, fused_mlp=False,
                    sequence_parallel=True, device=None, dtype=None):
     print('create_mlp_cls')
-    print_line_and_file()
+    print_line_and_file(inspect.currentframe())
     
     factory_kwargs = {'device': device, 'dtype': dtype}
     inner_dim = d_inner if d_inner is not None else 4 * d_model
@@ -110,7 +110,7 @@ def create_block(d_model, d_inner=None, process_group=None,
                  device=None, dtype=None):
     factory_kwargs = {'device': device, 'dtype': dtype}
     print('create_block')
-    print_line_and_file()
+    print_line_and_file(inspect.currentframe())
 
     mixer_cls = create_mixer_cls(layer=layer, process_group=process_group,
                                  attn_layer_idx=attn_layer_idx,
@@ -243,7 +243,7 @@ class LMBackbone(nn.Module):
             mixer_kwargs['inference_params'] = inference_params
         for layer in self.layers:
             print(f'layer = {layer}')
-            print_line_and_file()
+            print_line_and_file(inspect.currentframe())
 
             hidden_states, residual = layer(hidden_states, residual, mixer_kwargs=mixer_kwargs)
         if not self.fused_dropout_add_ln:
