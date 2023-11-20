@@ -1,3 +1,4 @@
+import inspect
 import math
 
 from re import U
@@ -205,6 +206,13 @@ class HyenaFilter(OptimModule):
 
         return y
     
+
+def print_line_and_file():
+    current_frame = inspect.currentframe()
+    line_number = current_frame.f_lineno
+    file_name = inspect.getfile(current_frame)
+    print(f'Current line number: {line_number}, File name: {file_name}')
+    
     
 class HyenaOperator(nn.Module):
     def __init__(
@@ -248,6 +256,9 @@ class HyenaOperator(nn.Module):
             activation: (str): type of act between kernel output and FF (default identity)
             return_state: (bool): whether to return a state
         """
+        print('HyenaOperator::__init__')
+        print_line_and_file()
+
         super().__init__()
         assert d_model % num_heads == 0, f'Model dimension {d_model} must be divisible by num heads {num_heads}'
         assert l_max % num_blocks == 0, f'Maximum signal length {l_max} must be divisible by block dimension {num_blocks}'
@@ -307,6 +318,9 @@ class HyenaOperator(nn.Module):
         raise NotImplementedError("Working on it!")
     
     def forward(self, u, *args, **kwargs):
+        print('HyenaOperator::forward')
+        print_line_and_file()
+        
         l = u.size(-2)
         l_filter = min(l, self.l_max)
         u = self.in_proj(u)
