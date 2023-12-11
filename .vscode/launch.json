@@ -37,6 +37,15 @@
                 "--ckpt_path", "/home/avi/ckpoints/hyena/hyena_small_150b_tok.ckpt",
                 "--data_dir", "/home/avi/data/code/python/final/jsonl"
             ]
-        }        
+        },
+        {
+            "name": "Python: train cfar10",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/avi/git_repos/safari_local/train.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "env": {"WANDB_API_KEY":"a4bb1084037cb9f74037c9f528cdb03ff074550a"}
+        },
     ]
 }
