@@ -59,7 +59,9 @@ def auto_assign_attrs(cls, **kwargs):
     for k, v in kwargs.items():
         setattr(cls, k, v)
         
-        
+# avi keinan, this function is used to instantiate the model, optimizer, and scheduler. it is factoryy method.
+# it creates the object from the config file. it is used in the main.py file.
+# is also creates hyena operator obeject.        
 def instantiate(registry, config, *args, partial=False, wrap=None, **kwargs):
     """
     registry: Dictionary mapping names to functions or target paths (e.g. {'model': 'models.SequenceModel'})
@@ -80,6 +82,8 @@ def instantiate(registry, config, *args, partial=False, wrap=None, **kwargs):
     else:
         _name_ = config.pop("_name_")
         _target_ = registry[_name_]
+
+    print(f'instantiate (obj gactory), _name_={_name_}, _target_={_target_}')
 
     # Retrieve the right constructor automatically based on type
     if isinstance(_target_, str):

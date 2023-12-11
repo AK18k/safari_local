@@ -80,7 +80,7 @@ class LAMBADA:
         results = []
         tokenized_target = []
         skiped_prompts_count = 0
-        target_token_index = -20
+        target_token_index = -10
         process_data_samples_limit = 1_000
         for prompt in tqdm(self.data[:process_data_samples_limit]):
             if (self.use_code_data_):
@@ -117,11 +117,15 @@ class LAMBADA:
             logits = out.logits[0][:-1, :vocab_size] # seq_len - 1, vocab_size
 
             logits = logits + stop_filter[None]
-            preds = logits.argmax(-1)            
-            acc = all([pred == answer for pred, answer 
-                       #in zip(preds[-len(target_tokenized):], target_tokenized)
-                       in zip(preds[target_token_index_actual:], target_tokenized)
-                    ])          
+            preds = logits.argmax(-1)    
+            if (self.use_code_data_):
+                # comapre the target_token_index word with the target token
+                acc = preds[target_token_index_actual] == target_tokenized[0]
+            else:        
+                acc = all([pred == answer for pred, answer 
+                        #in zip(preds[-len(target_tokenized):], target_tokenized)
+                        in zip(preds[target_token_index_actual:], target_tokenized)
+                        ])          
 
             preplexity = self.calc_preplexity(logits, torch.tensor(target_ids[1:]).to(device=device))
 

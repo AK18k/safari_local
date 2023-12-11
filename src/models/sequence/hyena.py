@@ -24,11 +24,14 @@ from src.utils.train import OptimModule
 from src.utils.config import instantiate, auto_assign_attrs
 from src.models.nn import Activation
 
+import matplotlib.pyplot as plt
+
 
 # reference convolution with residual connection
 def fftconv_ref(u, k, D, dropout_mask, gelu=True, k_rev=None):
-    print('fftconv_ref')
-    print_line_and_file(inspect.currentframe())
+    # debug print
+    # print('fftconv_ref')
+    # print_line_and_file(inspect.currentframe())
     
     seqlen = u.shape[-1]
     fft_size = 2 * seqlen
@@ -117,6 +120,7 @@ class ExponentialModulation(OptimModule):
         return x                  
 
 
+# avi keinan - this is the class that is used to create the implicit filter. it is used in the HyenaOperator class.
 class HyenaFilter(OptimModule):
     def __init__(
             self, 
@@ -160,12 +164,14 @@ class HyenaFilter(OptimModule):
         self.seq_len = seq_len
   
         self.pos_emb = PositionalEmbedding(emb_dim, seq_len, lr_pos_emb)
+        # avi keinan, add lora here to the linear layers of the implicit filter.
 
         # uses a variable number of inner linear layers
         self.implicit_filter = nn.Sequential(
             nn.Linear(emb_dim, order),
             act,
         )
+        print(f'HyenaFilter::__init__, num_inner_mlps={num_inner_mlps}')
         for i in range(num_inner_mlps):
             self.implicit_filter.append(nn.Linear(order, order))
             self.implicit_filter.append(act)
@@ -275,6 +281,8 @@ class HyenaOperator(nn.Module):
             jit_filter=jit_filter, outer_mixing=outer_mixing, activation=activation, return_state=return_state,
         )
         self.activation = Activation(activation)
+        # avi keinan print the activation function
+        print('HyenaOperator::__init__, self.activation=', self.activation)
         self.dropout = nn.Dropout(dropout)
         self.setup_projections(fused_bias_fc, inner_factor)
         self.setup_filters(filter_cls, filter_args)
@@ -285,7 +293,10 @@ class HyenaOperator(nn.Module):
         if fused_bias_fc and FusedDense is None:
             raise ImportError('fused_dense is not installed')
         linear_cls = nn.Linear if not fused_bias_fc else FusedDense
+        print(f'HyenaOperator::setup_projections, linear_cls={linear_cls}')
+        # avi keinan - this is the linear layer that is used to project the output of the model.
         self.out_proj = linear_cls(self.d_model * inner_factor, self.d_model)
+        # avi keinan - this is the linear layer that is used to project the input of the model.        
         self.in_proj = linear_cls(self.d_model, (self.order + 1) * self.d_model) 
         if self.post_order_ffn:   
             self.ord_proj_w = nn.Parameter(torch.randn(self.order, self.num_heads, self.num_heads) / math.sqrt(self.head_dim))
@@ -321,11 +332,18 @@ class HyenaOperator(nn.Module):
         raise NotImplementedError("Working on it!")
     
     def forward(self, u, *args, **kwargs):
-        print('HyenaOperator::forward')
-        print_line_and_file(inspect.currentframe())
+        # debug print
+        # print('HyenaOperator::forward')
+        # print_line_and_file(inspect.currentframe())
         
         l = u.size(-2)
         l_filter = min(l, self.l_max)
+
+        # debug print, visualize graphicaly the magnitutde of the weights of self.in_proj linear layer.
+        weights = self.in_proj.weight.detach().cpu().numpy()
+        # print avg and std of weights
+        # print(f'HyenaOperator::forward, self.in_proj.weights, avg={weights.mean()}, std={weights.std()}')
+        
         u = self.in_proj(u)
         u = rearrange(u, 'b l d -> b d l')
         

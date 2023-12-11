@@ -242,8 +242,9 @@ class LMBackbone(nn.Module):
         if inference_params is not None:
             mixer_kwargs['inference_params'] = inference_params
         for layer in self.layers:
-            print(f'layer = {layer}')
-            print_line_and_file(inspect.currentframe())
+            # debug print
+            # print(f'layer = {layer}')
+            # print_line_and_file(inspect.currentframe())
 
             hidden_states, residual = layer(hidden_states, residual, mixer_kwargs=mixer_kwargs)
         if not self.fused_dropout_add_ln:

@@ -32,6 +32,9 @@ class SequenceModel(SequenceModule):
         track_norms=True,  # Log norms of each layer output
         dropinp=0.0,       # Input dropout
     ):
+        # debug print
+        print(f'In SequenceModel.__init__(), d_model={d_model}, n_layers={n_layers}, transposed={transposed}, dropout={dropout}, tie_dropout={tie_dropout}, prenorm={prenorm}, n_repeat={n_repeat}, layer={layer}, residual={residual}, norm={norm}, pool={pool}, track_norms={track_norms}, dropinp={dropinp}')
+        
         super().__init__()
         # Save arguments needed for forward pass
         self.d_model = d_model
