@@ -102,7 +102,11 @@ class LMDataModuleWT103(SequenceDataset):
             if cache_dir.is_dir():
                 return self._load_from_cache(cache_dir)
 
-        raw_datasets = load_dataset(self.dataset_name, self.dataset_config_name)
+        # raw_datasets = load_dataset(self.dataset_name, self.dataset_config_name)
+        raw_datasets = load_dataset("json", data_files=self.dataset_name)
+        filtered_dataset = raw_datasets['train'].filter(lambda example: len(example['text'].split()) > 1000)        
+        raw_datasets['train'] = filtered_dataset
+        
         # https://github.com/stanford-crfm/mistral/blob/main/src/corpora/auto.py
         if 'validation' not in raw_datasets:
             assert "train" in raw_datasets, "You must have train in raw_datasets to make a validation raw_datasets"
