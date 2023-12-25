@@ -104,8 +104,25 @@ class LMDataModuleWT103(SequenceDataset):
 
         # raw_datasets = load_dataset(self.dataset_name, self.dataset_config_name)
         raw_datasets = load_dataset("json", data_files=self.dataset_name)
-        filtered_dataset = raw_datasets['train'].filter(lambda example: len(example['text'].split()) > 1000)        
+        for i in range(5):
+            num_words = len(raw_datasets["train"]["text"][i].split())
+            print(f'raw_datasets, {i} num_words = {num_words}')
+        # avi keinan : filter long sentences.
+        filtered_dataset = raw_datasets['train'].filter(lambda example: len(example['text'].split()) < 1000)        
+
+        # for i in range(5):
+        #     num_words = len(filtered_dataset["text"][i].split())
+        #     print(f'filtered_dataset, {i} num_words = {num_words}')
+
         raw_datasets['train'] = filtered_dataset
+
+        if False:
+            other_columns = [col for col in raw_datasets['train'].column_names if col != 'text']
+            raw_datasets['train'] = raw_datasets['train'].remove_columns(other_columns)   
+
+        # for i in range(5):
+        #     print(raw_datasets['train']['text'][i])
+
         
         # https://github.com/stanford-crfm/mistral/blob/main/src/corpora/auto.py
         if 'validation' not in raw_datasets:
