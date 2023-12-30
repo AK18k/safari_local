@@ -123,9 +123,7 @@ class LAMBADA:
                 acc = preds[target_token_index_actual] == target_tokenized[0]
             else:        
                 acc = all([pred == answer for pred, answer 
-                        #in zip(preds[-len(target_tokenized):], target_tokenized)
-                        in zip(preds[target_token_index_actual:], target_tokenized)
-                        ])          
+                        in zip(preds[-len(target_tokenized):], target_tokenized)])          
 
             preplexity = self.calc_preplexity(logits, torch.tensor(target_ids[1:]).to(device=device))
 
@@ -206,8 +204,13 @@ if __name__ == "__main__":
         default=False,
         help="Filter out stop words",
     )
+    
+    parser.add_argument("--use_code_data", 
+                        action='store_true', 
+                        default=False, 
+                        help="Use code data")    
         
     args = parser.parse_args()
         
-    task = LAMBADA(data_dir=args.data_dir, use_stop_filter=args.stop_word_filter, use_code_data=True)
+    task = LAMBADA(data_dir=args.data_dir, use_stop_filter=args.stop_word_filter, use_code_data=args.use_code_data)
     task.run(args.model_cfg, args.ckpt_path)

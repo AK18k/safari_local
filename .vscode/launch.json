@@ -31,11 +31,12 @@
             "env": {
                 "CUDA_VISIBLE_DEVICES":"0",
                 "CKPT_PATH":"/home/avi/ckpoints/hyena/hyena_small_150b_tok.ckpt",
-                "DATA_DIR":"/home/avi/data/code/python/final/jsonl"
+                "DATA_DIR":"/home/avi/data"
+                //"DATA_DIR":"/home/avi/data/code/python/final/jsonl"
             },
             "args": [
                 "--ckpt_path", "/home/avi/ckpoints/hyena/hyena_small_150b_tok.ckpt",
-                "--data_dir", "/home/avi/data/code/python/final/jsonl"
+                //"--use_code_data"
             ]
         },
         {
