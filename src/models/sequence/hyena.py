@@ -25,6 +25,7 @@ from src.utils.config import instantiate, auto_assign_attrs
 from src.models.nn import Activation
 
 import matplotlib.pyplot as plt
+import loralib as lora
 
 
 # reference convolution with residual connection
@@ -297,7 +298,9 @@ class HyenaOperator(nn.Module):
         # avi keinan - this is the linear layer that is used to project the output of the model.
         self.out_proj = linear_cls(self.d_model * inner_factor, self.d_model)
         # avi keinan - this is the linear layer that is used to project the input of the model.        
-        self.in_proj = linear_cls(self.d_model, (self.order + 1) * self.d_model) 
+        # self.in_proj = linear_cls(self.d_model, (self.order + 1) * self.d_model) # avi keinan - original code.
+        self.in_proj = lora.Linear(self.d_model, (self.order + 1) * self.d_model, r=16) # avi keinan - use lora instead of nn.Linear.
+
         if self.post_order_ffn:   
             self.ord_proj_w = nn.Parameter(torch.randn(self.order, self.num_heads, self.num_heads) / math.sqrt(self.head_dim))
             

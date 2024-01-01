@@ -55,14 +55,14 @@
             "request": "launch",
             "program": "/home/avi/git_repos/safari_local/train.py",
             "console": "integratedTerminal",
-            "justMyCode": true,  
+            "justMyCode": false,  
             "args": ["experiment=pile/hyena-150b-tokens",
                     "trainer.max_steps=10000",
                     "scheduler.t_initial=10000",
                     "trainer.devices=1",
                     "model.layer.fused_fft_conv=False",
                     "dataset.batch_size=5",
-                    "dataset.max_length=1024"
+                    //"dataset.max_length=1024"
                     ],
             "env": {"WANDB_API_KEY":"a4bb1084037cb9f74037c9f528cdb03ff074550a",
                     "DATA_PATH":"/home/avi/git_repos/safari_local/data/pile/the_pile.py"}

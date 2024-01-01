@@ -25,6 +25,8 @@ from src.tasks import decoders, encoders, tasks
 from src.utils import registry
 from src.utils.optim_groups import add_optimizer_hooks
 
+import loralib as lora
+
 log = src.utils.train.get_logger(__name__)
 
 # Turn on TensorFloat32 (speeds up large model training substantially)
@@ -34,6 +36,8 @@ torch.backends.cudnn.allow_tf32 = True
 
 OmegaConf.register_new_resolver('eval', eval)
 OmegaConf.register_new_resolver('div_up', lambda x, y: (x + y - 1) // y)
+
+# '/home/avi/ckpoints/hyena/hyena_small_150b_tok.ckpt'
 
 # Lots of annoying hacks to get WandbLogger to continuously retry on failure
 class DummyExperiment:
@@ -174,6 +178,16 @@ class SequenceLightningModule(pl.LightningModule):
             for module in self.modules():
                 if hasattr(module, name):
                     getattr(module, name)(**kwargs)
+
+        print(f'trained model = type({self.model})')
+
+        ckpt_path = '/home/avi/ckpoints/hyena/hyena_small_150b_tok.ckpt'
+
+        state_dict = torch.load(ckpt_path, map_location='cpu')
+        self.model.load_state_dict(state_dict, strict=False)
+
+        # avi keinan - Make sure only the lora layers are trainable.
+        lora.mark_only_lora_as_trainable(self.model)
 
         # Instantiate the task
         self.task = utils.instantiate(

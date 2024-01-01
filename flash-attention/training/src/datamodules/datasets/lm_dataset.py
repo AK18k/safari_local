@@ -29,4 +29,7 @@ class LMDataset(torch.utils.data.Dataset):
         start_idx = idx * self.seq_len
         seq_len = min(self.seq_len, self.ntokens - 1 - start_idx)
         data = torch.as_tensor(self.tokens[start_idx:(start_idx + seq_len + 1)].astype(np.int64))
+        # avi keinan: we return both the input and the target. 
+        # the target is the input shifted by one.
+        # for each token in the target, the input are all the tokens before it.
         return data[:-1], data[1:].clone()
