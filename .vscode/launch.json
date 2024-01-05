@@ -43,7 +43,7 @@
             "name": "Python: train cfar10",
             "type": "python",
             "request": "launch",
-            "program": "/home/avi/git_repos/safari_local/train.py",
+            "program": "/home/avi_keinan_a_k/git_repos/safari_local/train.py",
             "console": "integratedTerminal",
             "justMyCode": true,  
             "args": ["experiment=cifar/long-conv-cifar"],
@@ -53,19 +53,20 @@
             "name": "Python: train pile 5B",
             "type": "python",
             "request": "launch",
-            "program": "/home/avi/git_repos/safari_local/train.py",
+            "program": "/home/avi_keinan_a_k/git_repos/safari_local/train.py",
             "console": "integratedTerminal",
             "justMyCode": false,  
             "args": ["experiment=pile/hyena-150b-tokens",
-                    "trainer.max_steps=10000",
-                    "scheduler.t_initial=10000",
+                    "trainer.max_steps=20000",
+                    //"scheduler.t_initial=10000",
                     "trainer.devices=1",
                     "model.layer.fused_fft_conv=False",
                     "dataset.batch_size=5",
+                    "model.use_code_data=True",
                     //"dataset.max_length=1024"
                     ],
             "env": {"WANDB_API_KEY":"a4bb1084037cb9f74037c9f528cdb03ff074550a",
-                    "DATA_PATH":"/home/avi/git_repos/safari_local/data/pile/the_pile.py"}
+                    "DATA_PATH":"/home/avi_keinan_a_k/git_repos/safari_local/data/pile/the_pile.py"}
         }
     ]
 }

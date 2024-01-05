@@ -1,5 +1,5 @@
 _name_: the_pile
-dataset_name: '/home/avi/git_repos/safari_local/data/pile/00.jsonl'
+dataset_name: '/home/avi_keinan_a_k/data/code/python/final/jsonl/train/python_train_0.jsonl' #'/home/avi_keinan_a_k/git_repos/safari_local/data/pile/00.jsonl'
 dataset_config_name: null
 tokenizer_name: gpt2
 cache_dir: ${oc.env:DATA_PATH}/the_pile/cache

@@ -10,6 +10,7 @@ model:
   vocab_size: 50257
   resid_dropout: 0.0
   embed_dropout: 0.1
+  use_code_data: False  
   layer:
     _name_: hyena
     emb_dim: 33 
@@ -25,3 +26,4 @@ model:
   fused_dropout_add_ln: True
   residual_in_fp32: True
   pad_vocab_size_multiple: 8
+  

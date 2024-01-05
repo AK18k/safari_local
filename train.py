@@ -181,7 +181,7 @@ class SequenceLightningModule(pl.LightningModule):
 
         print(f'trained model = type({self.model})')
 
-        ckpt_path = '/home/avi/ckpoints/hyena/hyena_small_150b_tok.ckpt'
+        ckpt_path = '/home/avi_keinan_a_k/ckpoints/hyena/hyena_small_150b_tok.ckpt'
 
         state_dict = torch.load(ckpt_path, map_location='cpu')
         self.model.load_state_dict(state_dict, strict=False)
