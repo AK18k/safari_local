@@ -168,10 +168,17 @@ class HyenaFilter(OptimModule):
         # avi keinan, add lora here to the linear layers of the implicit filter.
 
         # uses a variable number of inner linear layers
+        # avi keinan - original code 
+        # self.implicit_filter = nn.Sequential(
+        #     nn.Linear(emb_dim, order),
+        #     act,)
+        # avi keinan - use lora instead of nn.Linear.
         self.implicit_filter = nn.Sequential(
-            nn.Linear(emb_dim, order),
-            act,
-        )
+            lora.Linear(emb_dim, order, r=16),
+            act,)
+
+
+
         print(f'HyenaFilter::__init__, num_inner_mlps={num_inner_mlps}')
         for i in range(num_inner_mlps):
             self.implicit_filter.append(nn.Linear(order, order))
@@ -298,8 +305,8 @@ class HyenaOperator(nn.Module):
         # avi keinan - this is the linear layer that is used to project the output of the model.
         self.out_proj = linear_cls(self.d_model * inner_factor, self.d_model)
         # avi keinan - this is the linear layer that is used to project the input of the model.        
-        # self.in_proj = linear_cls(self.d_model, (self.order + 1) * self.d_model) # avi keinan - original code.
-        self.in_proj = lora.Linear(self.d_model, (self.order + 1) * self.d_model, r=16) # avi keinan - use lora instead of nn.Linear.
+        self.in_proj = linear_cls(self.d_model, (self.order + 1) * self.d_model) # avi keinan - original code.
+        #self.in_proj = lora.Linear(self.d_model, (self.order + 1) * self.d_model, r=16) # avi keinan - use lora instead of nn.Linear.
 
         if self.post_order_ffn:   
             self.ord_proj_w = nn.Parameter(torch.randn(self.order, self.num_heads, self.num_heads) / math.sqrt(self.head_dim))
