@@ -57,12 +57,13 @@
             "console": "integratedTerminal",
             "justMyCode": false,  
             "args": ["experiment=pile/hyena-150b-tokens",
-                    "trainer.max_steps=20000",
+                    //"trainer.max_steps=20000",
                     //"scheduler.t_initial=10000",
                     "trainer.devices=1",
                     "model.layer.fused_fft_conv=False",
-                    "dataset.batch_size=5",
+                    "dataset.batch_size=7",
                     "model.use_code_data=True",
+                    "trainer.max_epochs=2"
                     //"dataset.max_length=1024"
                     ],
             "env": {"WANDB_API_KEY":"a4bb1084037cb9f74037c9f528cdb03ff074550a",
