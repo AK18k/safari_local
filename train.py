@@ -377,6 +377,7 @@ class SequenceLightningModule(pl.LightningModule):
         self.task._reset_torchmetrics("train")
 
     def training_epoch_end(self, outputs):
+        print('training_epoch_end')
         # Log training torchmetrics
         super().training_epoch_end(outputs)
         # self.log_dict(
@@ -387,6 +388,10 @@ class SequenceLightningModule(pl.LightningModule):
         #     add_dataloader_idx=False,
         #     sync_dist=True,
         # )
+
+        # Save model checkpoint
+        checkpoint_path = f"/home/avi_keinan_a_k/git_repos/safari_local/outputs/checkpoints/checkpoint_epoch_{self.current_epoch%5}.ckpt"
+        torch.save(self.model.state_dict(), checkpoint_path)
 
     def on_validation_epoch_start(self):
         # Reset all validation torchmetrics
