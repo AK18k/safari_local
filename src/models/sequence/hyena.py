@@ -192,7 +192,11 @@ class HyenaFilter(OptimModule):
             self.implicit_filter.append(act)
         
         # final linear layer
-        self.implicit_filter.append(nn.Linear(order, d_model, bias=False))
+        # avi keinan - original code             
+        # self.implicit_filter.append(nn.Linear(order, d_model, bias=False))
+            
+        # avi keinan - use lora instead of nn.Linear.            
+        self.implicit_filter.append(lora.Linear(order, d_model, r = 16, bias=False))            
             
         self.modulation = ExponentialModulation(d_model, **kwargs)
         
