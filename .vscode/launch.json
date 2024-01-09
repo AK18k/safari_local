@@ -51,7 +51,7 @@
             "env": {"WANDB_API_KEY":"a4bb1084037cb9f74037c9f528cdb03ff074550a"}
         },
        {
-            "name": "Python: train pile 5B",
+            "name": "Python: train python code",
             "type": "python",
             "request": "launch",
             "program": "/home/avi_keinan_a_k/git_repos/safari_local/train.py",
