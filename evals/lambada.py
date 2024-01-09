@@ -40,7 +40,7 @@ class LAMBADA:
         self.use_code_data_ = use_code_data
         if self.use_code_data_:
             data_dir = os.environ.get("DATA_DIR", data_dir)
-            code_path = os.path.join(data_dir + "/test/python_test_0.jsonl")
+            code_path = os.path.join(data_dir + "/code/python/final/jsonl/test/python_test_0.jsonl")
             with open(code_path, 'r') as f:
                 sample_file = f.readlines()
             self.data = sample_file
@@ -80,7 +80,7 @@ class LAMBADA:
         results = []
         tokenized_target = []
         skiped_prompts_count = 0
-        target_token_index = -10
+        target_token_index = -15
         process_data_samples_limit = 1_000
         for prompt in tqdm(self.data[:process_data_samples_limit]):
             if (self.use_code_data_):
@@ -151,14 +151,15 @@ class LAMBADA:
         # sort the tokens by their percentage values
         sorted_tokens = sorted(token_percentages.items(), key=lambda x: x[1], reverse=True)
 
-        # plot a histogram of the token percentages
-        fig, ax = plt.subplots()
-        ax.bar([token[0] for token in sorted_tokens], [token[1] for token in sorted_tokens])
-        ax.set_ylabel('Percentage')
-        ax.set_xlabel('Token')
-        ax.set_ylim([0, 100])
-        ax.set_title('Token percentages')
-        plt.show(block=True)        
+        # plot a histogram of the token percentages avi keinan
+        # disablke in non gui env.
+        # fig, ax = plt.subplots()
+        # ax.bar([token[0] for token in sorted_tokens], [token[1] for token in sorted_tokens])
+        # ax.set_ylabel('Percentage')
+        # ax.set_xlabel('Token')
+        # ax.set_ylim([0, 100])
+        # ax.set_title('Token percentages')
+        # plt.show(block=True)        
 
 
         

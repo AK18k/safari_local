@@ -83,7 +83,8 @@ def instantiate(registry, config, *args, partial=False, wrap=None, **kwargs):
         _name_ = config.pop("_name_")
         _target_ = registry[_name_]
 
-    print(f'instantiate (obj gactory), _name_={_name_}, _target_={_target_}')
+    #  avi keinan
+    # print(f'instantiate (obj gactory), _name_={_name_}, _target_={_target_}')
 
     # Retrieve the right constructor automatically based on type
     if isinstance(_target_, str):

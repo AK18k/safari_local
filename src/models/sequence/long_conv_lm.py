@@ -49,8 +49,8 @@ def print_line_and_file(current_frame=None):
 def create_mixer_cls(layer=None, process_group=None,
                      attn_layer_idx=None, attn_cfg=None, layer_idx=None,
                      sequence_parallel=True, device=None, dtype=None):
-    print('create_mixer_cls')
-    print_line_and_file(inspect.currentframe())
+    # print('create_mixer_cls')
+    # print_line_and_file(inspect.currentframe())
 
     factory_kwargs = {'device': device, 'dtype': dtype}
     parallel_kwargs = ({'process_group': process_group, 'sequence_parallel': sequence_parallel}
@@ -72,9 +72,9 @@ def create_mixer_cls(layer=None, process_group=None,
         fused_bias_fc = False if layer is None else layer.get('fused_bias_fc', False)
         if process_group is not None:
             assert fused_bias_fc, 'TensorParallel SSM requires fused_bias_fc'
-        print(f'layer = {layer}')
+
         mixer_cls = instantiate(registry.layer, layer, partial=True, layer_idx=layer_idx, **factory_kwargs, **parallel_kwargs)
-        print(f'mixer_cls = {mixer_cls}')
+
         # mixer_cls = partial(ssm_cls, layer_idx=layer_idx,
         #                     **(ssm_cfg if ssm_cfg is not None else {}),
         #                     **parallel_kwargs, **factory_kwargs)
@@ -83,8 +83,8 @@ def create_mixer_cls(layer=None, process_group=None,
 
 def create_mlp_cls(d_model, d_inner=None, process_group=None, fused_mlp=False,
                    sequence_parallel=True, device=None, dtype=None):
-    print('create_mlp_cls')
-    print_line_and_file(inspect.currentframe())
+    # print('create_mlp_cls')
+    # print_line_and_file(inspect.currentframe())
     
     factory_kwargs = {'device': device, 'dtype': dtype}
     inner_dim = d_inner if d_inner is not None else 4 * d_model
@@ -109,8 +109,8 @@ def create_block(d_model, d_inner=None, process_group=None,
                  sequence_parallel=True,
                  device=None, dtype=None):
     factory_kwargs = {'device': device, 'dtype': dtype}
-    print('create_block')
-    print_line_and_file(inspect.currentframe())
+    # print('create_block')
+    # print_line_and_file(inspect.currentframe())
 
     mixer_cls = create_mixer_cls(layer=layer, process_group=process_group,
                                  attn_layer_idx=attn_layer_idx,

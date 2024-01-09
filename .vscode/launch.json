@@ -25,18 +25,19 @@
             "name": "Python: Lambda Module",
             "type": "python",
             "request": "launch",
-            "program": "/home/avi/git_repos/safari_local/evals/lambada.py",
+            "program": "/home/avi_keinan_a_k/git_repos/safari_local/evals/lambada.py",
             "console": "integratedTerminal",
             "justMyCode": true,
             "env": {
                 "CUDA_VISIBLE_DEVICES":"0",
-                "CKPT_PATH":"/home/avi/ckpoints/hyena/hyena_small_150b_tok.ckpt",
-                "DATA_DIR":"/home/avi/data"
+                //"CKPT_PATH":"/home/avi_keinan_a_k/ckpoints/hyena/hyena_small_150b_tok.ckpt",
+                "DATA_DIR":"/home/avi_keinan_a_k/data"
                 //"DATA_DIR":"/home/avi/data/code/python/final/jsonl"
             },
             "args": [
-                "--ckpt_path", "/home/avi/ckpoints/hyena/hyena_small_150b_tok.ckpt",
-                //"--use_code_data"
+                "--ckpt_path", "/home/avi_keinan_a_k/ckpoints/hyena/hyena_small_150b_tok.ckpt",
+                //"--ckpt_path", "/home/avi_keinan_a_k/git_repos/safari_local/outputs/checkpoints/checkpoint_epoch_4.ckpt",
+                "--use_code_data"
             ]
         },
         {
@@ -57,14 +58,11 @@
             "console": "integratedTerminal",
             "justMyCode": true,  
             "args": ["experiment=pile/hyena-150b-tokens",
-                    //"trainer.max_steps=200",
-                    //"scheduler.t_initial=10000",
                     "trainer.devices=1",
                     "model.layer.fused_fft_conv=False",
                     "dataset.batch_size=7",
                     "model.use_code_data=True",
                     "trainer.max_epochs=100"
-                    //"dataset.max_length=1024"
                     ],
             "env": {"WANDB_API_KEY":"a4bb1084037cb9f74037c9f528cdb03ff074550a",
                     "DATA_PATH":"/home/avi_keinan_a_k/git_repos/safari_local/data/pile/the_pile.py"}
