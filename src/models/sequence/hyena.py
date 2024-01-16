@@ -138,6 +138,7 @@ class HyenaFilter(OptimModule):
             bias=True,
             num_inner_mlps=2,
             normalized=False,
+            use_lora=True,
             **kwargs
         ):
         """
@@ -156,6 +157,8 @@ class HyenaFilter(OptimModule):
         self.d_model = d_model
         self.use_bias = bias
         self.fused_fft_conv = fused_fft_conv
+        self.use_lora_ = use_lora
+        print(f'HyenaFilter::__init__, self.use_lora_={self.use_lora_}')
         self.bias = nn.Parameter(torch.randn(self.d_model))
         self.dropout = nn.Dropout(dropout)
         
@@ -165,39 +168,37 @@ class HyenaFilter(OptimModule):
         self.seq_len = seq_len
   
         self.pos_emb = PositionalEmbedding(emb_dim, seq_len, lr_pos_emb)
-        # avi keinan, add lora here to the linear layers of the implicit filter.
 
         # uses a variable number of inner linear layers
-        # avi keinan - original code 
-        # self.implicit_filter = nn.Sequential(
-        #     nn.Linear(emb_dim, order),
-        #     act,)
-        
-        # avi keinan - use lora instead of nn.Linear.
-        self.implicit_filter = nn.Sequential(
-            lora.Linear(emb_dim, order, r=16),
-            act,)
+        # avi keinan - original and lora code 
+        if self.use_lora_:
+            self.implicit_filter = nn.Sequential(
+                lora.Linear(emb_dim, order, r=16),
+                act,)
 
-
-        # avi keijan - add more inner linear layers to the implicit filter.
-        # print(f'HyenaFilter::__init__, num_inner_mlps={num_inner_mlps}')
+        else:
+            self.implicit_filter = nn.Sequential(
+                nn.Linear(emb_dim, order),
+                act,)
+      
         for i in range(num_inner_mlps):
-            # avi keinan - original code 
-            # self.implicit_filter.append(nn.Linear(order, order))
-            
-            # avi keinan - use lora instead of nn.Linear.
-            self.implicit_filter.append(lora.Linear(order, order, r = 16))
+            # avi keinan - original code and lora code.
+            if self.use_lora_:
+                self.implicit_filter.append(lora.Linear(order, order, r = 16))
+            else:   
+                self.implicit_filter.append(nn.Linear(order, order))
 
-            # avi keinan - original code 
             self.implicit_filter.append(act)
         
+
         # final linear layer
-        # avi keinan - original code             
-        # self.implicit_filter.append(nn.Linear(order, d_model, bias=False))
-            
-        # avi keinan - use lora instead of nn.Linear.            
-        self.implicit_filter.append(lora.Linear(order, d_model, r = 16, bias=False))            
-            
+        # avi keinan - original and lora code             
+        if self.use_lora_:
+            self.implicit_filter.append(lora.Linear(order, d_model, r = 16, bias=False))            
+        else:
+            self.implicit_filter.append(nn.Linear(order, d_model, bias=False))
+
+
         self.modulation = ExponentialModulation(d_model, **kwargs)
         
         self.normalized = normalized
@@ -263,6 +264,7 @@ class HyenaOperator(nn.Module):
             short_filter_order=3, 
             activation="id",
             return_state=False,
+            use_lora=True,
             **filter_args,
         ):
         r"""
@@ -293,6 +295,8 @@ class HyenaOperator(nn.Module):
         assert l_max % num_blocks == 0, f'Maximum signal length {l_max} must be divisible by block dimension {num_blocks}'
         block_dim = l_max // num_blocks
         head_dim = d_model // num_heads
+        self.use_lora_ = use_lora
+        print(f'HyenaOperator::__init__, self.use_lora_={self.use_lora_}')
         
         auto_assign_attrs(
             self, d_model=d_model, order=order, l_max=l_max, num_heads=num_heads, inner_factor=inner_factor, 
@@ -306,6 +310,7 @@ class HyenaOperator(nn.Module):
         self.dropout = nn.Dropout(dropout)
         self.setup_projections(fused_bias_fc, inner_factor)
         self.setup_filters(filter_cls, filter_args)
+        
 
 
     def setup_projections(self, fused_bias_fc, inner_factor):
@@ -313,12 +318,17 @@ class HyenaOperator(nn.Module):
         if fused_bias_fc and FusedDense is None:
             raise ImportError('fused_dense is not installed')
         linear_cls = nn.Linear if not fused_bias_fc else FusedDense
-        # avi keinan - print the linear_cls
-        # print(f'HyenaOperator::setup_projections, linear_cls={linear_cls}')
-        # avi keinan - this is the linear layer that is used to project the output of the model.
-        self.out_proj = linear_cls(self.d_model * inner_factor, self.d_model)
-        # avi keinan - this is the linear layer that is used to project the input of the model.        
-        self.in_proj = linear_cls(self.d_model, (self.order + 1) * self.d_model) # avi keinan - original code.
+
+        # avi keinan - original and lora code.
+        if self.use_lora_:
+            self.out_proj = lora.Linear(self.d_model, self.d_model, r = 16)
+        else:
+            self.out_proj = linear_cls(self.d_model * inner_factor, self.d_model)
+
+        if self.use_lora_:
+            self.in_proj = lora.Linear(self.d_model, (self.order + 1) * self.d_model, r = 16 * (self.order + 1)) # avi keinan - use lora instead of nn.Linear.
+        else:
+            self.in_proj = linear_cls(self.d_model, (self.order + 1) * self.d_model) # avi keinan - original code.
 
         if self.post_order_ffn:   
             self.ord_proj_w = nn.Parameter(torch.randn(self.order, self.num_heads, self.num_heads) / math.sqrt(self.head_dim))
@@ -345,6 +355,7 @@ class HyenaOperator(nn.Module):
             seq_len=self.l_max,
             channels=1, 
             dropout=self.filter_dropout, 
+            use_lora=self.use_lora_,
             **filter_args
         ) 
         if self.jit_filter: self.filter_fn = torch.jit.script(self.filter_fn, self.L)
@@ -362,7 +373,7 @@ class HyenaOperator(nn.Module):
         l_filter = min(l, self.l_max)
 
         # debug print, visualize graphicaly the magnitutde of the weights of self.in_proj linear layer.
-        weights = self.in_proj.weight.detach().cpu().numpy()
+        # weights = self.in_proj.weight.detach().cpu().numpy()
         # print avg and std of weights
         # print(f'HyenaOperator::forward, self.in_proj.weights, avg={weights.mean()}, std={weights.std()}')
         

@@ -40,6 +40,7 @@ class LAMBADA:
         self.use_code_data_ = use_code_data
         if self.use_code_data_:
             data_dir = os.environ.get("DATA_DIR", data_dir)
+            #code_path = os.path.join(data_dir + "/code/python/final/jsonl/train/python_train_0.jsonl")
             code_path = os.path.join(data_dir + "/code/python/final/jsonl/test/python_test_0.jsonl")
             with open(code_path, 'r') as f:
                 sample_file = f.readlines()

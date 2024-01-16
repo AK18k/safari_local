@@ -87,6 +87,9 @@ class LMDataModuleWT103(SequenceDataset):
             self.process_dataset()
 
     def setup(self, stage=None):
+        # avi keinan
+        print(f'self.dataset_name = {self.dataset_name}')
+
         if stage == 'test' and hasattr(self, 'dataset_test'):
             return
         concat_ids, self.tokenizer = self.process_dataset()
@@ -104,21 +107,11 @@ class LMDataModuleWT103(SequenceDataset):
                 return self._load_from_cache(cache_dir)
 
         # avi keinan : load code data
-        if True:            
-            raw_datasets = load_dataset("json", data_files=self.dataset_name)
-        else:
-            # raw_datasets = load_dataset(self.dataset_name, self.dataset_config_name)
-            raw_datasets = load_dataset("json", data_files=self.dataset_name)
+        raw_datasets = load_dataset("json", data_files=self.dataset_name)
 
-        for i in range(5):
-            num_words = len(raw_datasets["train"][i]["text"].split())
-            print(f'raw_datasets, {i} num_words = {num_words}')
-
-        if False:
-            other_columns = [col for col in raw_datasets['train'].column_names if col != 'text']
-            raw_datasets['train'] = raw_datasets['train'].remove_columns(other_columns)   
-
-        
+        # avi keinan
+        print(f'processing dataset = {self.dataset_name}')
+       
         # https://github.com/stanford-crfm/mistral/blob/main/src/corpora/auto.py
         if 'validation' not in raw_datasets:
             assert "train" in raw_datasets, "You must have train in raw_datasets to make a validation raw_datasets"

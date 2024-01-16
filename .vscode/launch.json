@@ -22,7 +22,7 @@
             ]
         },
         {
-            "name": "Python: Lambda Module",
+            "name": "Python: test hyena / hyena-lora",
             "type": "python",
             "request": "launch",
             "program": "/home/avi_keinan_a_k/git_repos/safari_local/evals/lambada.py",
@@ -35,8 +35,9 @@
                 //"DATA_DIR":"/home/avi/data/code/python/final/jsonl"
             },
             "args": [
-                "--ckpt_path", "/home/avi_keinan_a_k/ckpoints/hyena/hyena_small_150b_tok.ckpt",
-                //"--ckpt_path", "/home/avi_keinan_a_k/git_repos/safari_local/outputs/checkpoints/checkpoint_epoch_4.ckpt",
+                //"--ckpt_path", "/home/avi_keinan_a_k/ckpoints/hyena/hyena_small_150b_tok.ckpt",
+                "--ckpt_path", "/home/avi_keinan_a_k/git_repos/safari_local/outputs/checkpoints/checkpoint_epoch_4.ckpt",
+                //"--model_cfg", "/home/avi_keinan_a_k/git_repos/safari_local/configs/experiment/pile/hyena.yaml",
                 "--use_code_data"
             ]
         },
@@ -56,7 +57,7 @@
             "request": "launch",
             "program": "/home/avi_keinan_a_k/git_repos/safari_local/train.py",
             "console": "integratedTerminal",
-            "justMyCode": true,  
+            "justMyCode": false,  
             "args": ["experiment=pile/hyena-150b-tokens",
                     "trainer.devices=1",
                     "model.layer.fused_fft_conv=False",

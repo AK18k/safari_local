@@ -566,7 +566,8 @@ class SequenceLightningModule(pl.LightningModule):
         return [optimizer], [scheduler]
 
     def train_dataloader(self):
-        return self.dataset.train_dataloader(**self.hparams.loader)
+        data_loader = self.dataset.train_dataloader(**self.hparams.loader)
+        return data_loader 
 
     def _eval_dataloaders_names(self, loaders, prefix):
         """Process loaders into a list of names and loaders"""

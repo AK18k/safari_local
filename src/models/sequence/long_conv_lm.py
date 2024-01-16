@@ -107,7 +107,7 @@ def create_block(d_model, d_inner=None, process_group=None,
                  resid_dropout1=0.0, resid_dropout2=0.0, residual_in_fp32=False,
                  fused_mlp=False, fused_dropout_add_ln=False, layer_idx=None,
                  sequence_parallel=True,
-                 device=None, dtype=None):
+                 device=None, dtype=None, use_lora=True):
     factory_kwargs = {'device': device, 'dtype': dtype}
     # print('create_block')
     # print_line_and_file(inspect.currentframe())
@@ -172,7 +172,7 @@ class LMBackbone(nn.Module):
                  layer_norm_epsilon: float = 1e-5, initializer_cfg=None,
                  fused_mlp=False, fused_dropout_add_ln=False, residual_in_fp32=False,
                  sequence_parallel=True,
-                 device=None, dtype=None, **kwargs) -> None:
+                 device=None, dtype=None, use_lora=True, **kwargs) -> None:
         factory_kwargs = {'device': device, 'dtype': dtype}
         super().__init__()
         self.process_group = process_group
@@ -206,7 +206,7 @@ class LMBackbone(nn.Module):
             resid_dropout1=embed_dropout if i == 0 else resid_dropout,
             resid_dropout2=resid_dropout, residual_in_fp32=residual_in_fp32,
             fused_mlp=fused_mlp, fused_dropout_add_ln=fused_dropout_add_ln, layer_idx=i,
-            sequence_parallel=self.sequence_parallel,
+            sequence_parallel=self.sequence_parallel, use_lora=use_lora,
             **factory_kwargs,
         ) for i in range(n_layer)])
 
@@ -270,7 +270,7 @@ class ConvLMHeadModel(nn.Module, GenerationMixin):
                  layer_norm_epsilon: float = 1e-5, initializer_cfg=None,
                  fused_mlp=False, fused_dropout_add_ln=False, residual_in_fp32=False,
                  pad_vocab_size_multiple: int = 1, sequence_parallel=True,
-                 device=None, dtype=None, **kwargs) -> None:
+                 device=None, dtype=None, use_lora=False, **kwargs) -> None:
         factory_kwargs = {'device': device, 'dtype': dtype}
         super().__init__()
         self.process_group = process_group
@@ -285,7 +285,7 @@ class ConvLMHeadModel(nn.Module, GenerationMixin):
             dropout_cls=dropout_cls, layer_norm_epsilon=layer_norm_epsilon,
             initializer_cfg=initializer_cfg, fused_mlp=fused_mlp,
             fused_dropout_add_ln=fused_dropout_add_ln, residual_in_fp32=residual_in_fp32,
-            sequence_parallel=sequence_parallel,
+            sequence_parallel=sequence_parallel, use_lora=use_lora,
             **factory_kwargs, **kwargs
         )
         if process_group is None:
